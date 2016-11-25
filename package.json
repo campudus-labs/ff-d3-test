@@ -22,7 +22,14 @@
     "babel-core": "^6.18.2",
     "babel-preset-latest": "^6.16.0",
     "babel-register": "^6.18.0",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^6.1.2",
+    "gulp-concat": "^2.6.1",
+    "gulp-sourcemaps": "^1.9.1",
     "mocha": "^3.2.0",
     "must": "^0.13.2"
+  },
+  "dependencies": {
+    "d3": "^4.4.0"
   }
 }

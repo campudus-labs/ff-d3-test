@@ -28,8 +28,12 @@ export function addDebt(userA, amount, userB) {
     throw new Error(`${userA.name} cannot owe something to itself`);
   }
 
-  const oldAmount = users[userA.name].debts[userB.name] || 0;
-  users[userA.name].debts[userB.name] = oldAmount + amount;
+  const oldA2B = users[userA.name].debts[userB.name] || 0;
+  users[userA.name].debts[userB.name] = oldA2B + amount;
+
+  const oldB2A = users[userB.name].debts[userA.name] || 0;
+  users[userB.name].debts[userA.name] = oldB2A - amount;
+
 }
 
 export function listDebts(user) {
@@ -38,4 +42,28 @@ export function listDebts(user) {
   }
 
   return user.debts;
+}
+
+export function getBalance(user) {
+  return Object.values(user.debts).reduce((balance, amount) => balance + amount, 0);
+}
+
+export function listAllDebts() {
+  return Object.values(users).reduce((allDebts, user) => {
+    allDebts[user.name] = Object.keys(user.debts).reduce((ds, key) => {
+      const amount = user.debts[key];
+      if (amount > 0) {
+        ds.push({
+          to: users[key],
+          amount
+        });
+      }
+      return ds;
+    }, []);
+    return allDebts;
+  }, {});
+}
+
+export function simplifyDebts() {
+  Object.keys(users).forEach(name => users[name].debts = []);
 }

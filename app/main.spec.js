@@ -1,5 +1,5 @@
 import expect from "must";
-import {addDebt, createUser, listDebts, listUsers, resetUsers} from "./main";
+import {addDebt, createUser, getBalance, listAllDebts, listDebts, listUsers, resetUsers, simplifyDebts} from "./main";
 
 describe("debt app", () => {
 
@@ -81,9 +81,10 @@ describe("debt app", () => {
 
       expect(Object.keys(listDebts(user1)).length).to.eql(1);
       expect(listDebts(user1)).to.eql({[user2.name]: 10});
+      expect(listDebts(user2)).to.eql({[user1.name]: -10});
     });
 
-    it("sums the amounts of debt", () => {
+    it("sums the amounts of debt per user", () => {
       const user1 = createUser();
       const user2 = createUser();
 
@@ -92,7 +93,112 @@ describe("debt app", () => {
 
       expect(Object.keys(listDebts(user1)).length).to.eql(1);
       expect(listDebts(user1)).to.eql({[user2.name]: 20});
+      expect(listDebts(user2)).to.eql({[user1.name]: -20});
     });
+
+    it("user a owes user b. user b owes user a -> changes debt", () => {
+      const userA = createUser();
+      const userB = createUser();
+
+      addDebt(userA, 40, userB);
+      addDebt(userB, 30, userA);
+
+      expect(listDebts(userA)).to.eql({[userB.name]: 10});
+      expect(listDebts(userB)).to.eql({[userA.name]: -10});
+    });
+
+    it("user b can owe user a more. user b owes user a -> changes debt", () => {
+      const userA = createUser();
+      const userB = createUser();
+
+      addDebt(userA, 40, userB);
+      addDebt(userB, 50, userA);
+
+      expect(listDebts(userA)).to.eql({[userB.name]: -10});
+      expect(listDebts(userB)).to.eql({[userA.name]: 10});
+    });
+
+    it("show balance of a user", () => {
+      const userA = createUser();
+      const userB = createUser();
+      const userC = createUser();
+
+      addDebt(userA, 40, userB);
+      addDebt(userB, 50, userA);
+      addDebt(userB, 25, userA);
+      addDebt(userC, 15, userA);
+
+      expect(getBalance(userB)).to.eql(35);
+      expect(getBalance(userA)).to.eql(-50);
+      expect(getBalance(userC)).to.eql(15);
+    });
+
+    it("show all debts of all users", () => {
+      const userA = createUser();
+      const userB = createUser();
+      const userC = createUser();
+
+      addDebt(userA, 10, userB);
+      addDebt(userA, 20, userC);
+      addDebt(userB, 20, userC);
+
+      const expectedDebtObject = {
+        [userA.name]: [
+          {
+            to: userB,
+            amount: 10
+          },
+          {
+            to: userC,
+            amount: 20
+          }
+        ],
+        [userB.name]: [
+          {
+            to: userC,
+            amount: 20
+          }
+        ],
+        [userC.name]: []
+      };
+
+      expect(listAllDebts()).to.eql(expectedDebtObject);
+    });
+
+    it("shows all users without debts in the beginning", () => {
+      const userA = createUser();
+      const userB = createUser();
+      const userC = createUser();
+
+      expect(listAllDebts()).to.eql({
+        [userA.name]: [],
+        [userB.name]: [],
+        [userC.name]: []
+      });
+    });
+
+    it("can resolve cycles", () => {
+      const userA = createUser();
+      const userB = createUser();
+      const userC = createUser();
+
+      addDebt(userA, 10, userB);
+      addDebt(userB, 10, userC);
+      addDebt(userC, 10, userA);
+
+      expect(getBalance(userA)).to.eql(0);
+      expect(getBalance(userB)).to.eql(0);
+      expect(getBalance(userC)).to.eql(0);
+
+      simplifyDebts();
+
+      expect(listAllDebts()).to.eql({
+        [userA.name]: [],
+        [userB.name]: [],
+        [userC.name]: []
+      });
+    });
+
   });
 
 });
