@@ -1,0 +1,28 @@
+{
+  "name": "ff-d3-test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "./node_modules/mocha/bin/mocha $(find . -type d -name node_modules -prune -o -name '*.server-spec.js' -o -name '*.spec.js') --compilers js:babel-register",
+    "test:watch": "./node_modules/mocha/bin/mocha $(find . -type d -name node_modules -prune -o -name '*.server-spec.js' -o -name '*.spec.js') --compilers js:babel-register --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/campudus/ff-d3-test.git"
+  },
+  "keywords": [],
+  "author": "Campudus GmbH",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/campudus/ff-d3-test/issues"
+  },
+  "homepage": "https://github.com/campudus/ff-d3-test#readme",
+  "devDependencies": {
+    "babel-core": "^6.18.2",
+    "babel-preset-latest": "^6.16.0",
+    "babel-register": "^6.18.0",
+    "mocha": "^3.2.0",
+    "must": "^0.13.2"
+  }
+}
