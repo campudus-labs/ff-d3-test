@@ -199,6 +199,38 @@ describe("debt app", () => {
       });
     });
 
+    it("can resolve more difficult cycles", () => {
+      const userA = createUser();
+      const userB = createUser();
+      const userC = createUser();
+
+      addDebt(userA, 10, userB);
+      addDebt(userB, 20, userC);
+      addDebt(userC, 30, userA);
+
+      expect(getBalance(userA)).to.eql(-20);
+      expect(getBalance(userB)).to.eql(10);
+      expect(getBalance(userC)).to.eql(10);
+
+      simplifyDebts();
+
+      expect(listAllDebts()).to.eql({
+        [userA.name]: [],
+        [userB.name]: [
+          {
+            to: userA,
+            amount: 10
+          }
+        ],
+        [userC.name]: [
+          {
+            to: userA,
+            amount: 10
+          }
+        ]
+      });
+    });
+
   });
 
 });
