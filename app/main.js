@@ -65,5 +65,7 @@ export function listAllDebts() {
 }
 
 export function simplifyDebts() {
-  Object.keys(users).forEach(name => users[name].debts = []);
+  Object.keys(users).forEach(name => {
+    users[name].debts = [];
+  });
 }
